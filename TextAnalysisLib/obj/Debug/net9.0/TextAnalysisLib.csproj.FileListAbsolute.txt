@@ -1,0 +1,12 @@
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\bin\Debug\net9.0\TextAnalysisLib.deps.json
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\bin\Debug\net9.0\TextAnalysisLib.dll
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\bin\Debug\net9.0\TextAnalysisLib.pdb
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.csproj.AssemblyReference.cache
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.GeneratedMSBuildEditorConfig.editorconfig
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.AssemblyInfoInputs.cache
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.AssemblyInfo.cs
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.csproj.CoreCompileInputs.cache
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.dll
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\refint\TextAnalysisLib.dll
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.pdb
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\ref\TextAnalysisLib.dll
