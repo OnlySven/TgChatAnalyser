@@ -1,76 +1,139 @@
 namespace TextAnalysisLib;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+
 public class MessageAnalyser
 {
-    public IOrderedEnumerable<KeyValuePair<string, int>> MessagesPerHour(string filePath)
+    private readonly string storageFolderPath;
+    private readonly string lastFileName;
+
+    public MessageAnalyser(string folderName)
     {
+        storageFolderPath = $"D://code stuff//Sharp//WordAnalyser//{folderName}";
+        lastFileName = $"{folderName}_messages.json";
+    }
+
+    private Dictionary<string, List<DatedMessage>> GetMessages()
+    {
+        string filePath = Path.Combine(storageFolderPath, lastFileName);
+
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($"Файл не знайдено: {filePath}");
+
         string json = File.ReadAllText(filePath);
-        var data = JObject.Parse(json);
-        var messages = data["messages"];
-        Dictionary<string, int> messagesPerDay = new();
 
-        foreach (var message in messages)
+        var data = JsonConvert.DeserializeObject<Dictionary<string, List<DatedMessage>>>(json);
+
+        if (data == null)
+            throw new InvalidDataException("Не вдалося розпарсити файл як словник користувачів");
+
+        return data;
+    }
+
+    public Dictionary<string, int> ActivityPerHour()
+    {
+        var allMessages = GetMessages();
+        Dictionary<string, int> activityPerHour = new();
+
+        foreach (var userMessages in allMessages.Values)
         {
-            var dateToken = message["date"];
-            if (dateToken != null)
+            foreach (var msg in userMessages)
             {
-                string date = DateTime.Parse(dateToken.ToString()).ToString("HH");
+                if (msg?.Date != null)
+                {
+                    string hour = msg.Date.ToString("HH");
 
-                if (!messagesPerDay.ContainsKey(date))
-                    messagesPerDay[date] = 1;
-                else
-                    messagesPerDay[date]++;
+                    if (!activityPerHour.ContainsKey(hour))
+                        activityPerHour[hour] = 1;
+                    else
+                        activityPerHour[hour]++;
+                }
             }
         }
 
-        return messagesPerDay.OrderBy(g => g.Key);
+        return activityPerHour.OrderBy(g => g.Key).ToDictionary();
     }
-    public Dictionary<string, int> MessagesPerMonth(string filePath)
+    public Dictionary<string, int> ActivityPerDay()
     {
-        string json = File.ReadAllText(filePath);
-        var data = JObject.Parse(json);
-        var messages = data["messages"];
-        Dictionary<string, int> messagesPerDay = new();
+        var allMessages = GetMessages();
+        Dictionary<string, int> activityPerDayOfWeek = new();
 
-        foreach (var message in messages)
+        foreach (var userMessages in allMessages.Values)
         {
-            var dateToken = message["date"];
-            if (dateToken != null)
+            foreach (var msg in userMessages)
             {
-                string date = DateTime.Parse(dateToken.ToString()).ToString("MMMM yyyy");
+                if (msg?.Date != null)
+                {
+                    string dayOfWeek = msg.Date.ToString("dddd", new System.Globalization.CultureInfo("uk-UA"));
 
-                if (!messagesPerDay.ContainsKey(date))
-                    messagesPerDay[date] = 1;
-                else
-                    messagesPerDay[date]++;
+                    if (!activityPerDayOfWeek.ContainsKey(dayOfWeek))
+                        activityPerDayOfWeek[dayOfWeek] = 1;
+                    else
+                        activityPerDayOfWeek[dayOfWeek]++;
+                }
+            }
+        }
+        string[] orderedDays = new[] { "понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота", "неділя" };
+
+        return activityPerDayOfWeek
+            .OrderBy(kvp => Array.IndexOf(orderedDays, kvp.Key.ToLower()))
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+    }
+    public Dictionary<string, int> MessagesPerMonth()
+    {
+        var allMessages = GetMessages();
+        var culture = new System.Globalization.CultureInfo("uk-UA");
+        Dictionary<string, int> messagesPerMonth = new();
+
+        foreach (var userMessages in allMessages.Values)
+        {
+            foreach (var msg in userMessages)
+            {
+                if (msg?.Date != null)
+                {
+                    string month = msg.Date.ToString("MMMM yyyy", culture);
+
+                    if (!messagesPerMonth.ContainsKey(month))
+                        messagesPerMonth[month] = 1;
+                    else
+                        messagesPerMonth[month]++;
+                }
             }
         }
 
-        return messagesPerDay;
+        return messagesPerMonth
+            .OrderBy(p => DateTime.ParseExact(p.Key, "MMMM yyyy", culture))
+            .ToDictionary(p => p.Key, p => p.Value);
     }
-    public Dictionary<string, int> MessagesPerDay(string filePath)
+    public Dictionary<string, int> MessagesPerDay()
     {
-        string json = File.ReadAllText(filePath);
-        var data = JObject.Parse(json);
-        var messages = data["messages"];
+        var allMessages = GetMessages();
+        var culture = new System.Globalization.CultureInfo("uk-UA");
         Dictionary<string, int> messagesPerDay = new();
 
-        foreach (var message in messages)
+        foreach (var userMessages in allMessages.Values)
         {
-            var dateToken = message["date"];
-            if (dateToken != null)
+            foreach (var msg in userMessages)
             {
-                string date = DateTime.Parse(dateToken.ToString()).ToString("dd MMMM yyyy");
+                if (msg?.Date != null)
+                {
+                    string day = msg.Date.ToString("dd MMMM yyyy", culture);
 
-                if (!messagesPerDay.ContainsKey(date))
-                    messagesPerDay[date] = 1;
-                else
-                    messagesPerDay[date]++;
+                    if (!messagesPerDay.ContainsKey(day))
+                        messagesPerDay[day] = 1;
+                    else
+                        messagesPerDay[day]++;
+                }
             }
         }
 
-        return messagesPerDay;
+        return messagesPerDay
+            .OrderBy(p => DateTime.ParseExact(p.Key, "dd MMMM yyyy", culture))
+            .ToDictionary(p => p.Key, p => p.Value);
     }
+
+
+
     public IOrderedEnumerable<KeyValuePair<string, double>> AverageMessageLength(Dictionary<string, List<string>> messages)
     {
         Dictionary<string, double> mesLen = new();

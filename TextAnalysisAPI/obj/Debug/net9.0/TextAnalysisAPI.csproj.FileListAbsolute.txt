@@ -33,3 +33,4 @@ D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisAPI\obj\Debug\net9.0\ref
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisAPI\obj\Debug\net9.0\TextAnalysisAPI.pdb
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisAPI\obj\Debug\net9.0\TextAnalysisAPI.genruntimeconfig.cache
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisAPI\obj\Debug\net9.0\ref\TextAnalysisAPI.dll
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisAPI\obj\Debug\net9.0\TextAnalysisAPI.sourcelink.json

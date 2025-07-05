@@ -10,3 +10,4 @@ D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\Tex
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\refint\TextAnalysisLib.dll
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.pdb
 D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\ref\TextAnalysisLib.dll
+D:\code stuff\Projects\TextAnalysisSolution\TextAnalysisLib\obj\Debug\net9.0\TextAnalysisLib.sourcelink.json

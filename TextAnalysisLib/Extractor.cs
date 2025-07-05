@@ -6,81 +6,82 @@ using System.Text.RegularExpressions;
 public class Extractor
 {
     const string storageFolderPath = "D://code stuff//Sharp//WordAnalyser";
-    public Dictionary<string, List<string>> ExtractMessages(JObject data)
+
+    public Dictionary<string, List<DatedMessage>> ExtractMessages(JObject data)
     {
         var messages = data["messages"];
-        Dictionary<string, List<string>> userMessages = new();
+        Dictionary<string, List<DatedMessage>> userMessages = new();
 
         foreach (var message in messages)
         {
-            if (message["text"] != null && message["from"] != null)
+            if (message["text"] != null && message["from"] != null && message["date"] != null)
             {
+                string username = message["from"]!.ToString();
                 string text = "";
-                string username = message["from"].ToString();
-                if (message["text"].Type == JTokenType.Array)
+
+                if (message["text"]!.Type == JTokenType.Array)
                 {
-                    foreach (var item in message["text"])
+                    foreach (var item in message["text"]!)
                     {
                         if (item.Type == JTokenType.String)
                             text += item.ToString();
                         else if (item["text"] != null)
-                            text += item["text"].ToString() + " ";
+                            text += item["text"]!.ToString() + " ";
                     }
                 }
                 else
                 {
-                    text = message["text"].ToString();
+                    text = message["text"]!.ToString();
                 }
 
+                DateTime date;
+                if (!DateTime.TryParse(message["date"]!.ToString(), out date))
+                    continue;
+
+                var datedMessage = new DatedMessage
+                {
+                    Date = date,
+                    Text = text.Trim()
+                };
+
                 if (!userMessages.ContainsKey(username))
-                    userMessages.Add(username, new List<string> { text });
-                else userMessages[username].Add(text);
+                    userMessages[username] = new List<DatedMessage>();
+
+                userMessages[username].Add(datedMessage);
             }
         }
 
         return userMessages;
     }
-    public Dictionary<string, List<string>> ExtractWords(Dictionary<string, List<string>> messages)
+
+    public Dictionary<string, List<string>> ExtractWords(Dictionary<string, List<DatedMessage>> messages)
     {
         Dictionary<string, List<string>> userWords = new();
         var blacklist = new HashSet<string>
         {
             "text", "type", "https", "link", "int", "i", "n", "file", "photo", "service", "document", "width", "height"
         };
+
         foreach (var user in messages)
         {
-            string text = string.Join(" ", user.Value);
             string username = user.Key;
 
-            var words = Regex.Matches(text.ToLower(), @"\b[а-яА-ЯіїєґІЇЄҐa-zA-Z]+\b", RegexOptions.IgnoreCase)
-                             .Select(m => m.Value)
-                             .Where(w => !blacklist.Contains(w))
-                             .ToList();
+            // Об'єднуємо всі повідомлення користувача в один великий текст
+            string combinedText = string.Join(" ", user.Value.Select(m => m.Text));
+
+            var words = Regex.Matches(combinedText.ToLower(), @"\b[а-яА-ЯіїєґІЇЄҐa-zA-Z]+\b", RegexOptions.IgnoreCase)
+                            .Select(m => m.Value)
+                            .Where(w => !blacklist.Contains(w))
+                            .ToList();
 
             userWords[username] = words;
         }
+
         return userWords;
     }
-    public Dictionary<string, List<string>> ExtractReactions(string filePath)
+
+    public Dictionary<string, List<string>> ExtractReactions(JObject data)
     {
-        string baseFileName = Path.GetFileNameWithoutExtension(filePath);
-
-        string targetFolder = Path.Combine(storageFolderPath, baseFileName);
-
-        if (!Directory.Exists(targetFolder))
-            Directory.CreateDirectory(targetFolder);
-
-        string resultFileName = $"{baseFileName}_reactions.json";
-        string resultFilePath = Path.Combine(targetFolder, resultFileName);
-
-        if (File.Exists(resultFilePath))
-        {
-            string cachedJson = File.ReadAllText(resultFilePath);
-            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(cachedJson);
-        }
-
-        string json = File.ReadAllText(filePath);
-        var data = JObject.Parse(json);
         var messages = data["messages"];
         var userReactions = new Dictionary<string, List<string>>();
 
@@ -107,10 +108,6 @@ public class Extractor
                 }
             }
         }
-
-        string jsonResult = JsonConvert.SerializeObject(userReactions, Formatting.Indented);
-        File.WriteAllText(resultFilePath, jsonResult);
-
         return userReactions;
     }
 }

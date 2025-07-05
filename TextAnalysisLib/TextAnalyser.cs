@@ -2,7 +2,7 @@
 
 public class TextAnalyser
 {
-    public string Hello() => "TextAnalyzer is working!";
+    public string Hello(string name) => $"TextAnalyzer says: Hello {name}!";
     public IOrderedEnumerable<KeyValuePair<string, int>> UniqueWordCount(Dictionary<string, List<string>> words)
     {
         Dictionary<string, int> result = new();
