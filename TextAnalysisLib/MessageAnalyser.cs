@@ -105,6 +105,38 @@ public class MessageAnalyser
             .OrderBy(p => DateTime.ParseExact(p.Key, "MMMM yyyy", culture))
             .ToDictionary(p => p.Key, p => p.Value);
     }
+    public Dictionary<string, int> MessagesPerWeek()
+    {
+        var allMessages = GetMessages();
+        var culture = new System.Globalization.CultureInfo("uk-UA");
+        Dictionary<string, int> messagesPerWeek = new();
+
+        foreach (var userMessages in allMessages.Values)
+        {
+            foreach (var msg in userMessages)
+            {
+                if (msg?.Date != null)
+                {
+                    DateTime date = msg.Date.Date;
+                    int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
+                    DateTime startOfWeek = date.AddDays(-diff);
+                    DateTime endOfWeek = startOfWeek.AddDays(6);
+
+                    string weekKey = $"{startOfWeek:dd.MM.yyyy} – {endOfWeek:dd.MM.yyyy}";
+
+                    if (!messagesPerWeek.ContainsKey(weekKey))
+                        messagesPerWeek[weekKey] = 1;
+                    else
+                        messagesPerWeek[weekKey]++;
+                }
+            }
+        }
+
+        return messagesPerWeek
+            .OrderBy(p => DateTime.ParseExact(p.Key.Substring(0, 10), "dd.MM.yyyy", culture))
+            .ToDictionary(p => p.Key, p => p.Value);
+    }
+
     public Dictionary<string, int> MessagesPerDay()
     {
         var allMessages = GetMessages();
@@ -131,9 +163,6 @@ public class MessageAnalyser
             .OrderBy(p => DateTime.ParseExact(p.Key, "dd MMMM yyyy", culture))
             .ToDictionary(p => p.Key, p => p.Value);
     }
-
-
-
     public IOrderedEnumerable<KeyValuePair<string, double>> AverageMessageLength(Dictionary<string, List<string>> messages)
     {
         Dictionary<string, double> mesLen = new();

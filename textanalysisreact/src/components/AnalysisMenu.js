@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
+import MessageCharts from './MessageCharts';
 
 function AnalysisMenu() {
   const location = useLocation();
@@ -10,8 +11,8 @@ function AnalysisMenu() {
 
   const [selected, setSelected] = useState('Аналіз повідомлень');
   const [chartType, setChartType] = useState('hour');
-  const [folderResult, setFolderResult] = useState('');
   const [chartData, setChartData] = useState([]);
+  const [folderResult, setFolderResult] = useState('');
 
   const fetchChartData = async (type) => {
     const endpoint =
@@ -19,7 +20,7 @@ function AnalysisMenu() {
 
     try {
       const response = await fetch(
-        `http://localhost:5222/api/analysis/${endpoint}?folder=${encodeURIComponent(folder)}`
+        `http://localhost:5222/api/messageanalysis/${endpoint}?folder=${encodeURIComponent(folder)}`
       );
       if (!response.ok) throw new Error('Помилка при отриманні даних');
       const data = await response.json();
@@ -139,6 +140,8 @@ function AnalysisMenu() {
               </ResponsiveContainer>
             </div>
           )}
+
+          <MessageCharts folder={folder} />
         </>
       )}
 
