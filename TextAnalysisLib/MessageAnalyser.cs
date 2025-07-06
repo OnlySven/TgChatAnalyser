@@ -29,7 +29,6 @@ public class MessageAnalyser
 
         return data;
     }
-
     public Dictionary<string, int> ActivityPerHour()
     {
         var allMessages = GetMessages();
@@ -136,7 +135,6 @@ public class MessageAnalyser
             .OrderBy(p => DateTime.ParseExact(p.Key.Substring(0, 10), "dd.MM.yyyy", culture))
             .ToDictionary(p => p.Key, p => p.Value);
     }
-
     public Dictionary<string, int> MessagesPerDay()
     {
         var allMessages = GetMessages();
@@ -163,19 +161,26 @@ public class MessageAnalyser
             .OrderBy(p => DateTime.ParseExact(p.Key, "dd MMMM yyyy", culture))
             .ToDictionary(p => p.Key, p => p.Value);
     }
-    public IOrderedEnumerable<KeyValuePair<string, double>> AverageMessageLength(Dictionary<string, List<string>> messages)
+    public Dictionary<string, double> AverageMessageLength()
     {
+        var messages = GetMessages();
         Dictionary<string, double> mesLen = new();
         foreach (var user in messages)
         {
-            double avg = user.Value.Select(w => w.Length).Average();
+            double avg = user.Value.Select(w => w.Text.Length).Average();
             mesLen[user.Key] = Math.Round(avg, 2);
         }
-        return mesLen.OrderByDescending(g => g.Value);
+        return mesLen.OrderByDescending(g => g.Value).ToDictionary();
     }
-    public int MessageCount(Dictionary<string, List<string>> messages)
+    public Dictionary<string, int> MessageCount()
     {
-        return messages.SelectMany(pairs => pairs.Value).Count();
+        var messages = GetMessages();
+        Dictionary<string, int> messageCount = new();
+        foreach (var user in messages)
+        {
+            messageCount[user.Key] = user.Value.Count;
+        }
+        return messageCount.OrderByDescending(g => g.Value).ToDictionary();
     }
     public Dictionary<string, List<string>> MessagesWithWord(Dictionary<string, List<string>> messages, string word)
     {

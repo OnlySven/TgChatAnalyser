@@ -52,5 +52,23 @@ namespace TextAnalysisAPI.Controllers
             var messagesPerMonth = analyser.MessagesPerMonth();
             return Ok(messagesPerMonth);
         }
+        [HttpGet("messages-average-length")]
+        public IActionResult GetMessagesAverageLength([FromQuery] string folder)
+        {
+            if (string.IsNullOrWhiteSpace(folder))
+                return BadRequest("Не вказано папку");
+            MessageAnalyser analyser = new MessageAnalyser(folder);
+            var averageMessageLength = analyser.AverageMessageLength();
+            return Ok(averageMessageLength);
+        }
+        [HttpGet("messages-count")]
+        public IActionResult GetMessagesCount([FromQuery] string folder)
+        {
+            if (string.IsNullOrWhiteSpace(folder))
+                return BadRequest("Не вказано папку");
+            MessageAnalyser analyser = new MessageAnalyser(folder);
+            var messageCount = analyser.MessageCount();
+            return Ok(messageCount);
+        }
     }
 }
