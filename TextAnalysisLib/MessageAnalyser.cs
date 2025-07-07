@@ -185,7 +185,8 @@ public class MessageAnalyser
     public Dictionary<string, List<string>> MessagesWithWord(Dictionary<string, List<string>> messages, string word)
     {
         Dictionary<string, List<string>> result = new();
-        string trimedWord = StemUkrainian(word);
+        TextAnalyser textAnalyser = new(storageFolderPath);
+        string trimedWord = textAnalyser.StemUkrainian(word);
         foreach (var user in messages)
         {
             result[user.Key] = user.Value.Where(mes => mes.IndexOf(trimedWord, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -193,17 +194,5 @@ public class MessageAnalyser
         }
 
         return result.Where(g => g.Value.Count() != 0).ToDictionary();
-    }
-    private string StemUkrainian(string word)
-    {
-        string[] suffixes = { "ами", "ями", "ами", "ові", "еві", "ею", "ою", "ах", "ях", "и", "і", "у", "ю", "а", "я", "о", "е", "ик", "ік" };
-
-        foreach (var suffix in suffixes.OrderByDescending(s => s.Length))
-        {
-            if (word.EndsWith(suffix))
-                return word.Substring(0, word.Length - suffix.Length);
-        }
-
-        return word;
     }
 }

@@ -7,14 +7,27 @@ namespace TextAnalysisAPI.Controllers
     [Route("api/[controller]")]
     public class WordAnalysisController : ControllerBase
     {
-        [HttpGet("activity-per-hour")]
-        public IActionResult GetActivityPerHour([FromQuery] string folder)
+        [HttpGet("top-unique-words")]
+        public IActionResult GetTopUniqueWords([FromQuery] string folder)
         {
             if (string.IsNullOrWhiteSpace(folder))
                 return BadRequest("Не вказано папку");
-            MessageAnalyser analyser = new MessageAnalyser(folder);
-            var activityPerHour = analyser.ActivityPerHour();
-            return Ok(activityPerHour);
+            TextAnalyser analyser = new TextAnalyser(folder);
+            var topUniqueWords = analyser.Top(20);
+            return Ok(topUniqueWords);
+        }
+
+        [HttpGet("top-filtered-words")]
+        public IActionResult GetTopFilteredWords([FromQuery] string folder, [FromQuery] string word)
+        {
+            if (string.IsNullOrWhiteSpace(folder))
+                return BadRequest("Не вказано папку");
+            if (string.IsNullOrWhiteSpace(word))
+                return BadRequest("Не вказано слово для пошуку");
+
+            TextAnalyser analyser = new TextAnalyser(folder);
+            var topFilteredWords = analyser.WordStemDetailedFrequency(word);
+            return Ok(topFilteredWords);
         }
     }
 }

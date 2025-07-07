@@ -1,80 +1,169 @@
-﻿namespace TextAnalysisLib;
+﻿using Newtonsoft.Json;
+
+namespace TextAnalysisLib;
 
 public class TextAnalyser
 {
-    public IOrderedEnumerable<KeyValuePair<string, int>> UniqueWordCount(Dictionary<string, List<string>> words)
+    private readonly string storageFolderPath;
+    private readonly string lastFileName;
+
+    public TextAnalyser(string folderName)
     {
-        Dictionary<string, int> result = new();
-        foreach (var user in words)
-        {
-            result[user.Key] = user.Value.GroupBy(w => w)
-                                        .Count();
-        }
-        return result.OrderByDescending(g => g.Value);
+        storageFolderPath = $"D://code stuff//Sharp//WordAnalyser//{folderName}";
+        lastFileName = $"{folderName}_words.json";
     }
-    public Dictionary<string, string> MostUsedWordByUsers(Dictionary<string, List<string>> words)
+
+    private Dictionary<string, List<string>> GetWords()
     {
+        string filePath = Path.Combine(storageFolderPath, lastFileName);
+
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($"Файл не знайдено: {filePath}");
+
+        string json = File.ReadAllText(filePath);
+
+        var data = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+
+        if (data == null)
+            throw new InvalidDataException("Не вдалося розпарсити файл як словник слів користувачів");
+
+        return data;
+    }
+
+    public IOrderedEnumerable<KeyValuePair<string, int>> UniqueWordCount()
+    {
+        var words = GetWords();
+        return words.ToDictionary(
+                user => user.Key,
+                user => user.Value.GroupBy(w => w).Count()
+            )
+            .OrderByDescending(g => g.Value);
+    }
+
+    public Dictionary<string, string> MostUsedWordByUsers()
+    {
+        var words = GetWords();
         Dictionary<string, string> result = new();
 
         foreach (var user in words)
         {
             result[user.Key] = user.Value.GroupBy(w => w)
-                                        .OrderByDescending(w => w.Count())
-                                        .First()
-                                        .Key;
+                                         .OrderByDescending(w => w.Count())
+                                         .First().Key;
         }
 
         return result;
     }
-    public IOrderedEnumerable<KeyValuePair<string, int>> TotalWordsPerUser(Dictionary<string, List<string>> words)
+
+    public IOrderedEnumerable<KeyValuePair<string, int>> TotalWordsPerUser()
     {
+        var words = GetWords();
         Dictionary<string, int> wordTierList = new();
 
         foreach (var user in words)
         {
             wordTierList[user.Key] = user.Value.Count;
         }
+
         wordTierList["All"] = words.SelectMany(pair => pair.Value).Count();
+
         return wordTierList.Where(v => v.Value != 0).OrderByDescending(g => g.Value);
     }
-    public IOrderedEnumerable<KeyValuePair<string, int>> WordFrequencyPerUser(Dictionary<string, List<string>> words, string word)
+
+    public IOrderedEnumerable<KeyValuePair<string, int>> WordFrequencyPerUser(string word)
     {
+        var words = GetWords();
         Dictionary<string, int> wordList = new();
-        
-        foreach(var user in words)
+
+        foreach (var user in words)
         {
             int count = user.Value.Count(w => string.Equals(w, word, StringComparison.OrdinalIgnoreCase));
             wordList[user.Key] = count;
         }
+
         wordList["All"] = words.SelectMany(pairs => pairs.Value)
                                .Count(w => string.Equals(w, word, StringComparison.OrdinalIgnoreCase));
+
         return wordList.Where(v => v.Value != 0).OrderByDescending(g => g.Value);
     }
-    public int WordCountByUser(Dictionary<string, List<string>> words, string user)
+
+    public int WordCountByUser(string user)
     {
+        var words = GetWords();
         if (!words.ContainsKey(user))
             return -1;
-        return words[user].Count();
+        return words[user].Count;
     }
-    public IEnumerable<IGrouping<string,string>> Top(Dictionary<string, List<string>> allWords, int top = int.MaxValue)
+
+    public Dictionary<string, int> Top(int top = int.MaxValue)
     {
-        var topWords = allWords.SelectMany(pairs => pairs.Value)
-                                .GroupBy(w => w)
-                                .OrderByDescending(g => g.Count())
-                                .Take(top);
-        return topWords;
-    }
-    public IEnumerable<IGrouping<string, string>> Top(Dictionary<string, List<string>> allWords, string username, int top = int.MaxValue)
-    {
-        if (!allWords.ContainsKey(username))
+        var allWords = GetWords();
+        Dictionary<string, int> wordCount = new();
+        foreach (var pair in allWords)
         {
-            Console.WriteLine("User Not Found");
-            return Enumerable.Empty<IGrouping<string, string>>();
+            foreach (var word in pair.Value)
+            {
+                wordCount[word] = wordCount.GetValueOrDefault(word, 0) + 1;
+            }
         }
-        var topWords = allWords[username]
-                                .GroupBy(w => w)
-                                .OrderByDescending(g => g.Count())
-                                .Take(top);
-        return topWords;
+        return wordCount.OrderByDescending(g => g.Value)
+                        .Take(top).ToDictionary(g => g.Key, g => g.Value);
+    }
+
+    public IEnumerable<IGrouping<string, string>> Top(string username, int top = int.MaxValue)
+    {
+        var allWords = GetWords();
+
+        if (!allWords.ContainsKey(username))
+            return Enumerable.Empty<IGrouping<string, string>>();
+
+        return allWords[username]
+                       .GroupBy(w => w)
+                       .OrderByDescending(g => g.Count())
+                       .Take(top);
+    }
+    public Dictionary<string, int> WordStemDetailedFrequency(string targetWord)
+    {
+        var allWords = GetWords();
+        string stem = StemUkrainian(targetWord);
+
+        Dictionary<string, string> stemCache = new();
+
+        Dictionary<string, int> wordCounts = new();
+
+        foreach (var pair in allWords)
+        {
+            foreach (var word in pair.Value)
+            {
+                if (!stemCache.TryGetValue(word, out string wordStem))
+                {
+                    wordStem = StemUkrainian(word);
+                    stemCache[word] = wordStem;
+                }
+
+                if (wordStem.Equals(stem, StringComparison.OrdinalIgnoreCase))
+                {
+                    wordCounts[word] = wordCounts.GetValueOrDefault(word, 0) + 1;
+                }
+            }
+        }
+
+        return wordCounts.OrderByDescending(kvp => kvp.Value)
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+    }
+
+
+
+    public string StemUkrainian(string word)
+    {
+        string[] suffixes = { "ами", "ями", "ами", "ові", "еві", "ею", "ою", "ах", "ях", "и", "і", "у", "ю", "а", "я", "о", "е", "ик", "ік" };
+
+        foreach (var suffix in suffixes.OrderByDescending(s => s.Length))
+        {
+            if (word.EndsWith(suffix))
+                return word.Substring(0, word.Length - suffix.Length);
+        }
+
+        return word;
     }
 }

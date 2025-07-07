@@ -16,3 +16,13 @@ export const getToggleButtonStyle = (isActive) => ({
   background: isActive ? '#dceefc' : '#f0f0f0',
   color: isActive ? '#1976d2' : '#444',
 });
+
+export const searchInputStyle = {
+  marginBottom: 16,
+  padding: '8px 12px',
+  fontSize: 16,
+  width: '100%',
+  boxSizing: 'border-box',
+  borderRadius: 4,
+  border: '1px solid #ccc',
+};

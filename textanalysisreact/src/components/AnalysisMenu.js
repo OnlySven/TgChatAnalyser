@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import MessageCharts from './MessageCharts';
+import WordsCharts from './WordsCharts'; // Імпорт нового компонента
 
 function AnalysisMenu() {
   const location = useLocation();
@@ -63,8 +64,9 @@ function AnalysisMenu() {
       </div>
 
       {selected === 'Аналіз повідомлень' && <MessageCharts folder={folder} />}
+      {selected === 'Аналіз слів' && <WordsCharts folder={folder} />}
 
-      {selected !== 'Аналіз повідомлень' && (
+      {selected === 'Аналіз реакцій' && (
         <p style={{ fontSize: 18, marginTop: 20, color: '#888' }}>
           Ця вкладка ще в розробці 🛠
         </p>
