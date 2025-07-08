@@ -1,51 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LabelList } from 'recharts';
-import { fetchTopUniqueWords, fetchFilteredWords } from './TopUniqueWordsChartData';
+import { fetchTopUniqueWords, fetchFilteredWords, fetchUsersForFolder, fetchTopWordsPerUser } from './TopUniqueWordsChartData';
 import { searchInputStyle } from '../chartStyles';
 
-function TopUniqueWordsChart({ folder }) {
+function TopUniqueWordsChart({ folder, onWordSelect }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(''); // новий стан для вибору користувача
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Завантажуємо список користувачів при зміні папки
+  useEffect(() => {
+    if (!folder) return;
+    fetchUsersForFolder(folder)
+      .then(usersList => {
+        setUsers(usersList);
+        setSelectedUser(''); // скидаємо вибір користувача
+      })
+      .catch(() => setUsers([]));
+  }, [folder]);
 
   useEffect(() => {
     if (!folder) return;
 
     setLoading(true);
     setError(null);
+    setData([]);
 
     const fetchData = async () => {
       try {
         let result;
-        if (search.trim().length <= 1) {
-          result = await fetchTopUniqueWords(folder);
-        } else {
+
+        if (selectedUser) {
+          // Якщо вибрано користувача, завантажуємо топ слів для нього
+          result = await fetchTopWordsPerUser(folder, selectedUser);
+        } else if (search.trim().length > 0) {
+          // Якщо є пошук, фільтруємо
           result = await fetchFilteredWords(folder, search.trim());
+        } else {
+          // Інакше завантажуємо загальний топ слів по папці
+          result = await fetchTopUniqueWords(folder);
         }
+
         setData(result);
+
+        // Автоматично вибираємо слово
+        const selected = search.trim() || (result.length > 0 ? result[0].label : '');
+        onWordSelect?.(selected);
       } catch (e) {
         setError(e.message);
         setData([]);
+        onWordSelect?.('');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [folder, search]);
+  }, [folder, search, selectedUser]);
 
   const chartHeight = data.length * 20 + 100;
 
   return (
     <div style={{ flex: 1, minWidth: 320, maxWidth: 400 }}>
-      <input
-        type="text"
-        placeholder="Пошук слова..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={searchInputStyle}
-      />
+      <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+        <input
+          type="text"
+          placeholder="Пошук слова..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ ...searchInputStyle, flex: 1, marginBottom: 0 }}
+        />
+        <select
+          value={selectedUser}
+          onChange={(e) => setSelectedUser(e.target.value)}
+          style={{ flex: '0 0 150px', padding: '6px 12px', fontSize: 16, borderRadius: 4 }}
+        >
+          <option value="">Усі користувачі</option>
+          {users.map(user => (
+            <option key={user} value={user}>{user}</option>
+          ))}
+        </select>
+      </div>
 
       {loading && <p>Завантаження даних...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}

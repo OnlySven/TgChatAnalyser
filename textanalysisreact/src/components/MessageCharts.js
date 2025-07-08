@@ -168,14 +168,14 @@ function MessageCharts({ folder }) {
         </div>
 
         {/* Середня довжина повідомлень */}
-        <div style={{ flex: 1, minWidth: 320, maxWidth: 400 }}>
+        <div style={{ flex: 1, minWidth: 320, maxWidth: 700 }}>
           <h2 style={chartTitleStyle}>📏 Середня довжина повідомлень</h2>
           <AverageLengthChart data={averageLengthData} />
         </div>
       </div>
 
       {/* Права колонка */}
-      <div style={{ flex: 1, minWidth: 320, maxWidth: 400 }}>
+      <div style={{ flex: 1, minWidth: 320, maxWidth: 700 }}>
         <h2 style={chartTitleStyle}>{folderResult}</h2>
         <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
           <button onClick={() => setChartType('hour')} style={getChartTypeButtonStyle('hour')}>

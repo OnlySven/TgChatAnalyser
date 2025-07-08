@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TextAnalysisAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c6cbd4e01acccbf59249c4c1695c9acbae46382")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5744099f44c917af2fcb9a39b2d536805c25481e")]
 [assembly: System.Reflection.AssemblyProductAttribute("TextAnalysisAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TextAnalysisAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

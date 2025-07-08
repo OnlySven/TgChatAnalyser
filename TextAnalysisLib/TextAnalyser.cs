@@ -55,7 +55,7 @@ public class TextAnalyser
         return result;
     }
 
-    public IOrderedEnumerable<KeyValuePair<string, int>> TotalWordsPerUser()
+    public Dictionary<string, int> TotalWordsPerUser()
     {
         var words = GetWords();
         Dictionary<string, int> wordTierList = new();
@@ -65,12 +65,12 @@ public class TextAnalyser
             wordTierList[user.Key] = user.Value.Count;
         }
 
-        wordTierList["All"] = words.SelectMany(pair => pair.Value).Count();
-
-        return wordTierList.Where(v => v.Value != 0).OrderByDescending(g => g.Value);
+        return wordTierList.Where(v => v.Value != 0)
+                            .OrderByDescending(g => g.Value)
+                            .ToDictionary(g => g.Key, g => g.Value);
     }
 
-    public IOrderedEnumerable<KeyValuePair<string, int>> WordFrequencyPerUser(string word)
+    public Dictionary<string, int> WordFrequencyPerUser(string word)
     {
         var words = GetWords();
         Dictionary<string, int> wordList = new();
@@ -81,10 +81,9 @@ public class TextAnalyser
             wordList[user.Key] = count;
         }
 
-        wordList["All"] = words.SelectMany(pairs => pairs.Value)
-                               .Count(w => string.Equals(w, word, StringComparison.OrdinalIgnoreCase));
-
-        return wordList.Where(v => v.Value != 0).OrderByDescending(g => g.Value);
+        return wordList.Where(v => v.Value != 0)
+                        .OrderByDescending(g => g.Value)
+                        .ToDictionary(g => g.Key, g => g.Value);
     }
 
     public int WordCountByUser(string user)
@@ -110,17 +109,18 @@ public class TextAnalyser
                         .Take(top).ToDictionary(g => g.Key, g => g.Value);
     }
 
-    public IEnumerable<IGrouping<string, string>> Top(string username, int top = int.MaxValue)
+    public Dictionary<string, int> Top(string username, int top = int.MaxValue)
     {
         var allWords = GetWords();
 
         if (!allWords.ContainsKey(username))
-            return Enumerable.Empty<IGrouping<string, string>>();
+            return new Dictionary<string, int>();
 
         return allWords[username]
                        .GroupBy(w => w)
                        .OrderByDescending(g => g.Count())
-                       .Take(top);
+                       .Take(top)
+                       .ToDictionary(g => g.Key, g => g.Count());
     }
     public Dictionary<string, int> WordStemDetailedFrequency(string targetWord)
     {
@@ -151,8 +151,12 @@ public class TextAnalyser
         return wordCounts.OrderByDescending(kvp => kvp.Value)
                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
-
-
+    public List<string> GetUsers()
+    {
+        var words = GetWords();
+        return words.Keys.OrderBy(user => user)
+                        .ToList();
+    }
 
     public string StemUkrainian(string word)
     {
