@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import MessageCharts from './MessageCharts';
-import WordsCharts from './WordsCharts'; // Імпорт нового компонента
+import MessagesCharts from './MessagesCharts';
+import WordsCharts from './WordsCharts';
 
 function AnalysisMenu() {
   const location = useLocation();
@@ -63,9 +63,14 @@ function AnalysisMenu() {
         </button>
       </div>
 
-      {selected === 'Аналіз повідомлень' && <MessageCharts folder={folder} />}
-      {selected === 'Аналіз слів' && <WordsCharts folder={folder} />}
-
+      <MessagesCharts
+        folder={folder}
+        style={{ display: selected === 'Аналіз повідомлень' ? 'flex' : 'none' }}
+      />
+      <WordsCharts
+        folder={folder}
+        style={{ display: selected === 'Аналіз слів' ? 'flex' : 'none' }}
+      />
       {selected === 'Аналіз реакцій' && (
         <p style={{ fontSize: 18, marginTop: 20, color: '#888' }}>
           Ця вкладка ще в розробці 🛠

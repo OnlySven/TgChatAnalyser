@@ -5,6 +5,7 @@ export async function fetchAverageLength(folder) {
   if (!response.ok) throw new Error('Помилка при отриманні середньої довжини');
 
   const data = await response.json();
+
   return Object.entries(data).map(([user, avgLength]) => ({
     label: user,
     value: avgLength,

@@ -1,13 +1,45 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LabelList } from 'recharts';
+import React, { useEffect, useState } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LabelList
+} from 'recharts';
+import { fetchAverageLength } from './AverageLengthChartData';
+import { chartTitleStyle } from '../chartStyles';
 
-function AverageLengthChart({ data }) {
+function AverageLengthChart({ folder }) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!folder) return;
+
+    setLoading(true);
+    setError(null);
+
+    fetchAverageLength(folder)
+      .then(setData)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [folder]);
+
   const chartHeight = data.length * 20 + 100;
   const isLogScale = data.length > 2;
 
   return (
     <div style={{ flex: 1, minWidth: 320, maxWidth: 400 }}>
-      {data.length > 0 ? (
+      <h2 style={chartTitleStyle}>📏 Середня довжина повідомлень</h2>
+
+      {loading && <p>Завантаження...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {!loading && !error && data.length > 0 ? (
         <ResponsiveContainer width="100%" height={chartHeight}>
           <BarChart data={data} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
@@ -31,7 +63,7 @@ function AverageLengthChart({ data }) {
           </BarChart>
         </ResponsiveContainer>
       ) : (
-        <p>Дані не знайдено або сталася помилка.</p>
+        !loading && !error && <p>Дані не знайдено або сталася помилка.</p>
       )}
     </div>
   );
