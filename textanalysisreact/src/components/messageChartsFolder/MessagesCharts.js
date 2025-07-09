@@ -1,7 +1,7 @@
-import ActivityChart from './messageChartsFolder/ActivityChart';
-import MessagesChart from './messageChartsFolder/MessagesChart';
-import AverageLengthChart from './messageChartsFolder/AverageLengthChart';
-import PieMessageChart from './messageChartsFolder/PieMessageChart';
+import ActivityChart from './ActivityChart';
+import MessagesChart from './MessagesChart';
+import AverageLengthChart from './AverageLengthChart';
+import PieMessageChart from './PieMessageChart';
 
 function MessageCharts({ folder, style }) {
   return (

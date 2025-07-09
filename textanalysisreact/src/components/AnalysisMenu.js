@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import MessagesCharts from './MessagesCharts';
-import WordsCharts from './WordsCharts';
+import MessagesCharts from './messageChartsFolder/MessagesCharts';
+import WordsCharts from './wordChartsFolder/WordsCharts';
+import ReactionsCharts from './reactionsChartsFolder/ReactionsCharts';
 
 import {
   chartTitleStyle,
@@ -63,12 +64,10 @@ function AnalysisMenu() {
         folder={folder}
         style={{ display: selected === 'Аналіз слів' ? 'flex' : 'none' }}
       />
-
-      {selected === 'Аналіз реакцій' && (
-        <p style={{ fontSize: 18, marginTop: 20, color: '#888' }}>
-          Ця вкладка ще в розробці 🛠
-        </p>
-      )}
+      <ReactionsCharts
+        folder={folder}
+        style={{ display: selected === 'Аналіз реакцій' ? 'flex' : 'none' }}
+      />
     </div>
   );
 }

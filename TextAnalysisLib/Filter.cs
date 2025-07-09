@@ -73,7 +73,11 @@ public class Filter
         "ще",
         "дуже",
         "там",
-        "теж"
+        "теж",
+        "мені",
+        "нас",
+        "тебе",
+        "б"
     };
     public int AddToIgnoreList(string word)
     {

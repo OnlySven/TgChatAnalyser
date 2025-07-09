@@ -110,4 +110,20 @@ public class Extractor
         }
         return userReactions;
     }
+    public Dictionary<string, List<string>> GetWords(string storageFolderPath, string lastFileName)
+    {
+        string filePath = Path.Combine(storageFolderPath, lastFileName);
+
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($"Файл не знайдено: {filePath}");
+
+        string json = File.ReadAllText(filePath);
+
+        var data = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+
+        if (data == null)
+            throw new InvalidDataException("Не вдалося розпарсити файл як словник слів користувачів");
+
+        return data;
+    }
 }

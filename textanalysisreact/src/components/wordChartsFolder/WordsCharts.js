@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { chartTitleStyle } from './chartStyles';
-import TopUniqueWordsChart from './wordChartsFolder/TopUniqueWordsChart';
-import WordFrequencyChart from './wordChartsFolder/WordFrequencyChart';
-import PieChartWords from './wordChartsFolder/PieChartWords';
+import { chartTitleStyle } from '../chartStyles';
+import TopUniqueWordsChart from './TopUniqueWordsChart';
+import WordFrequencyChart from './WordFrequencyChart';
+import PieChartWords from './PieChartWords';
 
 function WordsCharts({ folder, style }) {
   const [selectedWord, setSelectedWord] = useState('');
@@ -23,7 +23,7 @@ function WordsCharts({ folder, style }) {
 
       {/* Права колонка */}
       
-      <div style={{ flex: 1, minWidth: 320, maxWidth: 700 }}>
+      <div style={{ flex: 20, minWidth: 500, maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 40 }}>
         <div>
           <h2 style={chartTitleStyle}>Частота слова</h2>
           {selectedWord ? (

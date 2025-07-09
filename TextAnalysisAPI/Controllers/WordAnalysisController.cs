@@ -38,7 +38,7 @@ namespace TextAnalysisAPI.Controllers
                 return BadRequest("Не вказано слово для пошуку");
 
             TextAnalyser analyser = new TextAnalyser(folder);
-            var wordFrequency = analyser.WordFrequencyPerUser(word);
+            var wordFrequency = analyser.ItemFrequencyPerUser(word);
             return Ok(wordFrequency);
         }
         [HttpGet("top-words-per-user")]
@@ -70,7 +70,7 @@ namespace TextAnalysisAPI.Controllers
                 return BadRequest("Не вказано папку");
 
             TextAnalyser analyser = new TextAnalyser(folder);
-            var totalWords = analyser.TotalWordsPerUser();
+            var totalWords = analyser.TotalItemsPerUser();
             return Ok(totalWords);
         }
     }
