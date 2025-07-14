@@ -1,40 +1,32 @@
-import React, { useState } from 'react';
-import { chartTitleStyle } from '../chartStyles';
+import React from 'react';
+import TopUniqueReactionsChart from './TopUniqueReactionsChart';
+import TopReceivedReactionsChart from './TopReceivedReactionsChart';
+import TopGivenReactionsChart from './TopGivenReactionsChart';
 
 function ReactionsCharts({ folder, style }) {
   return (
-    <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap', ...style }}>
-      {/* Ліва колонка */}
-      <div style={{ flex: 20, minWidth: 500, maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 40 }}>
-        <div>
-          <img
-          src="/mama_vlada.png"
-          alt="Мама Влада"
-          style={{ width: '400px', height: 'auto' }}
-        />
-        </div>
-        <img
-          src="/mama_vlada.png"
-          alt="Мама Влада"
-          style={{ width: '400px', height: 'auto' }}
-        />
+    <div
+      style={{
+        display: 'flex',
+        gap: 24,
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        ...style,
+      }}
+    >
+      {/* Колонка 1 */}
+      <div style={{ flex: '1 1 30%', minWidth: 320 }}>
+        <TopUniqueReactionsChart folder={folder} />
       </div>
 
-      {/* Права колонка */}
-      
-      <div style={{ flex: 20, minWidth: 500, maxWidth: 700, display: 'flex', flexDirection: 'column', gap: 40 }}>
-        <div>
-          <img
-          src="/mama_vlada.png"
-          alt="Мама Влада"
-          style={{ width: '400px', height: 'auto' }}
-        />
-        </div>
-        <img
-          src="/mama_vlada.png"
-          alt="Мама Влада"
-          style={{ width: '400px', height: 'auto' }}
-        />
+      {/* Колонка 2 */}
+      <div style={{ flex: '1 1 30%', minWidth: 320 }}>
+        <TopGivenReactionsChart folder={folder} />
+      </div>
+
+      {/* Колонка 3 */}
+      <div style={{ flex: '1 1 30%', minWidth: 320 }}>
+        <TopReceivedReactionsChart folder={folder} />
       </div>
     </div>
   );

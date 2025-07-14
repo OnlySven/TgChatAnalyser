@@ -9,7 +9,7 @@ import {
   CartesianGrid
 } from 'recharts';
 import CumulativeMessagesChart from './CumulativeMessagesChart';
-import { fetchMessagesChartData } from './MessagesChartData';
+import { fetchMessagesChartData } from './data/MessagesChartData';
 import { chartTitleStyle, getToggleButtonStyle } from '../chartStyles';
 
 function MessagesChart({ folder }) {
@@ -99,7 +99,7 @@ function MessagesChart({ folder }) {
                 allowDecimals={false}
                 label={{ value: 'Кількість', angle: -90, position: 'insideLeft' }}
               />
-              <Tooltip />
+              <Tooltip formatter={(value, name) => [`${value}`, 'Кількість']} />
               <Bar dataKey="count" fill="#ff9800" />
             </BarChart>
           </ResponsiveContainer>

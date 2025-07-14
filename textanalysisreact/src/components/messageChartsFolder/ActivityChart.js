@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts';
-import { fetchActivityChartData } from './ActivityChartData';
+import { fetchActivityChartData } from './data/ActivityChartData';
 import { chartTitleStyle, getToggleButtonStyle } from '../chartStyles';
 
 function ActivityChart({ folder }) {
@@ -80,7 +80,7 @@ function ActivityChart({ folder }) {
               allowDecimals={false}
               label={{ value: 'Кількість', angle: -90, position: 'insideLeft' }}
             />
-            <Tooltip />
+            <Tooltip formatter={(value, name) => [`${value}`, 'Кількість']} />
             <Bar dataKey="count" fill="#1976d2" />
           </BarChart>
         </ResponsiveContainer>

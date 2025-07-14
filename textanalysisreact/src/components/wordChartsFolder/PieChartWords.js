@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { fetchTotalWordsPerUser } from './PieChartWordsData';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { fetchTotalWordsPerUser } from './data/PieChartWordsData';
 import { chartTitleStyle } from '../chartStyles';
 
 const COLORS = [

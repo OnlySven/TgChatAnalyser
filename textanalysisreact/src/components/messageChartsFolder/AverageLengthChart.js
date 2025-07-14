@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   LabelList
 } from 'recharts';
-import { fetchAverageLength } from './AverageLengthChartData';
+import { fetchAverageLength } from './data/AverageLengthChartData';
 import { chartTitleStyle } from '../chartStyles';
 
 function AverageLengthChart({ folder }) {
@@ -56,7 +56,7 @@ function AverageLengthChart({ folder }) {
               interval={0}
               hide
             />
-            <Tooltip />
+            <Tooltip formatter={(value, name) => [`${value}`, 'Кількість символів']} />
             <Bar dataKey="value" fill="#4caf50">
               <LabelList dataKey="label" position="insideLeft" style={{ fill: '#000', fontSize: 12 }} />
             </Bar>

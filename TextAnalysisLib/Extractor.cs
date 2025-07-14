@@ -80,36 +80,76 @@ public class Extractor
         return userWords;
     }
 
-    public Dictionary<string, List<string>> ExtractReactions(JObject data)
+    public (Dictionary<string, List<string>> given, Dictionary<string, List<string>> received) ExtractReactionsFull(JObject data)
     {
         var messages = data["messages"];
-        var userReactions = new Dictionary<string, List<string>>();
+        var givenReactions = new Dictionary<string, List<string>>();
+        var receivedReactions = new Dictionary<string, List<string>>();
 
         foreach (var message in messages)
         {
-            if (message["reactions"] != null)
+            string? author = message["from"]?.ToString();
+
+            if (message["reactions"] == null)
+                continue;
+
+            foreach (var reaction in message["reactions"])
             {
-                foreach (var reaction in message["reactions"])
+                string emoji = reaction["emoji"]?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(emoji))
+                    continue;
+
+                // Отримані реакції — до автора повідомлення
+                if (!string.IsNullOrWhiteSpace(author))
                 {
-                    string emoji = reaction["emoji"]?.ToString() ?? "";
+                    if (!receivedReactions.ContainsKey(author))
+                        receivedReactions[author] = new List<string>();
+                    receivedReactions[author].Add(emoji);
+                }
 
-                    if (reaction["recent"] != null)
+                // Поставлені реакції — від recent/from
+                if (reaction["recent"] != null)
+                {
+                    foreach (var r in reaction["recent"])
                     {
-                        foreach (var r in reaction["recent"])
-                        {
-                            string user = r["from"]?.ToString() ?? "Unknown";
-
-                            if (!userReactions.ContainsKey(user))
-                                userReactions[user] = new List<string>();
-
-                            userReactions[user].Add(emoji);
-                        }
+                        string user = r["from"]?.ToString() ?? "Unknown";
+                        if (!givenReactions.ContainsKey(user))
+                            givenReactions[user] = new List<string>();
+                        givenReactions[user].Add(emoji);
                     }
                 }
             }
         }
-        return userReactions;
+
+        return (givenReactions, receivedReactions);
     }
+
+    public Dictionary<string, List<string>> ExtractEmojis(Dictionary<string, List<DatedMessage>> messages)
+    {
+        Dictionary<string, List<string>> userEmojis = new();
+        var emojiRegex = new Regex(
+            @"(\uD83C[\uDFFB-\uDFFF])|" +                        // tone modifiers окремо
+            @"(\uD83C[\uDF00-\uDFFF])|" +                        // емоджі базові 1 діапазон
+            @"(\uD83D[\uDC00-\uDE4F])|" +                        // емоджі базові 2 діапазон
+            @"(\uD83E[\uDD00-\uDDFF])|" +                        // емоджі базові 3 діапазон
+            @"(\uD83D[\uDFFB-\uDFFF])",                          // tone modifiers в діапазоні D83D
+            RegexOptions.Compiled);
+
+        foreach (var user in messages)
+        {
+            string username = user.Key;
+            string combinedText = string.Join(" ", user.Value.Select(m => m.Text));
+
+            var emojis = emojiRegex.Matches(combinedText)
+                                .Select(m => m.Value)
+                                .Where(e => !string.IsNullOrWhiteSpace(e))
+                                .ToList();
+
+            userEmojis[username] = emojis;
+        }
+        return userEmojis;
+    }
+
     public Dictionary<string, List<string>> GetWords(string storageFolderPath, string lastFileName)
     {
         string filePath = Path.Combine(storageFolderPath, lastFileName);

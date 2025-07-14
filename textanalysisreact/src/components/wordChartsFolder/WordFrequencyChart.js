@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, LabelList
 } from 'recharts';
-import { fetchWordFrequencyPerUser } from './WordFrequencyChartData';
+import { fetchWordFrequencyPerUser } from './data/WordFrequencyChartData';
 import { chartTitleStyle } from '../chartStyles';
 
 function WordFrequencyChart({ folder, word }) {
@@ -51,7 +51,7 @@ function WordFrequencyChart({ folder, word }) {
               interval={0}
               hide
             />
-            <Tooltip />
+            <Tooltip formatter={(value, name) => [`${value}`, 'Кількість']} />
             <Bar dataKey="value" fill="#ff9800">
               <LabelList dataKey="label" position="insideLeft" style={{ fill: '#000', fontSize: 12 }} />
             </Bar>

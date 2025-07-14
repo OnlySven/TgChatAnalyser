@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LabelList } from 'recharts';
-import { fetchTopUniqueWords, fetchFilteredWords, fetchUsersForFolder, fetchTopWordsPerUser } from './TopUniqueWordsChartData';
+import { fetchTopUniqueWords, fetchFilteredWords, fetchUsersForFolder, fetchTopWordsPerUser } from './data/TopUniqueWordsChartData';
 import { searchInputStyle } from '../chartStyles';
 
 function TopUniqueWordsChart({ folder, onWordSelect }) {
@@ -59,7 +59,7 @@ function TopUniqueWordsChart({ folder, onWordSelect }) {
     };
 
     fetchData();
-  }, [folder, search, selectedUser]);
+  }, [folder, search, selectedUser, onWordSelect]);
 
   const chartHeight = data.length * 20 + 100;
 
@@ -106,7 +106,7 @@ function TopUniqueWordsChart({ folder, onWordSelect }) {
                 interval={0}
                 hide
               />
-              <Tooltip />
+              <Tooltip formatter={(value) => [`${value}`, 'Кількість']} />
               <Bar dataKey="value" fill="#1976d2">
                 <LabelList dataKey="label" position="insideLeft" style={{ fill: '#000', fontSize: 12 }} />
               </Bar>

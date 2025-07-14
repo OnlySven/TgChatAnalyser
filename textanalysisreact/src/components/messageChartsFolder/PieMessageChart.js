@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
-import { fetchPieChartData } from './PieMessageChartData';
-import { chartTitleStyle, getToggleButtonStyle } from '../chartStyles';
+import { fetchPieChartData } from './data/PieMessageChartData';
+import { chartTitleStyle } from '../chartStyles';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA336A', '#33AA77', '#7777FF', '#FF44AA'];
 

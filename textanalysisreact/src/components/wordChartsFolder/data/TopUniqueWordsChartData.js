@@ -44,5 +44,5 @@ export async function fetchUsersForFolder(folder) {
   const response = await fetch(url);
   if (!response.ok) throw new Error('Не вдалося отримати список користувачів');
   const data = await response.json();
-  return data; // Припускаємо, що це масив рядків імен користувачів
+  return data;
 }

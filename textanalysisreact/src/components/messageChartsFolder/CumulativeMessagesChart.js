@@ -20,7 +20,7 @@ function CumulativeMessagesChart({ data }) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
         <YAxis allowDecimals={false} label={{ value: 'Кумулятивна кількість', angle: -90, position: 'insideLeft' }} />
-        <Tooltip />
+        <Tooltip formatter={(value, name) => [`${value}`, 'Кількість']} />
         <Line type="monotone" dataKey="cumulativeCount" stroke="#1976d2" strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
